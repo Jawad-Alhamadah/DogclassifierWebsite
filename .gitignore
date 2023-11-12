@@ -1,0 +1,10 @@
+node_modules
+'node_modules'
+/reactapp/node_modules
+./reactapp/node_modules
+
+./vgg16/*
+vgg16/vgg16-397923af.pth
+data/*
+
+model_transfer.pt
