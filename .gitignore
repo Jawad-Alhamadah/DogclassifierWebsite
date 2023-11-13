@@ -7,4 +7,3 @@ node_modules
 vgg16/vgg16-397923af.pth
 data/*
 
-model_transfer.pt
