@@ -2,6 +2,7 @@ import { React, useEffect } from "react";
 import { Row, Button, Col } from "react-bootstrap";
 import { ToastContainer, toast } from 'react-toastify';
 import TutorialCard from "../HomePage/TutorialCard";
+import deviceConfig from "../../deviceConfig"
 import $ from"jquery"
 //<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 //<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
@@ -19,7 +20,7 @@ function HomeScreen(props) {
   useEffect(() => {
     const firstPageTextObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        const text = entry.target.querySelectorAll("div");
+        const text = entry.target.querySelectorAll("div > div > span");
 
         if (entry.isIntersecting) {
           text.forEach((s) => s.classList.add("custom-title-main"));
@@ -36,38 +37,38 @@ function HomeScreen(props) {
 
   let phoneUIClasses = "flex-column-reverse d-flex"
   let laptopClasses = "justify-content-between row"
-  let minForBigDevices = 540
-  var justifyClass; 
-  var leftHalfClass;
+  let minWidthBigDevice = deviceConfig.minWidthBigDevice//540
+  var mainContentLayoutClasses; 
+  var leftSideLayoutClasses;
   var leftSideHtml;
   var wikiText = 'Want to learn more? Check the wikipedia page below'
-  var mobileWikiText= 'link to Wiki:'
+  var mobileWikiText= ''
   var laptopWikiText= "Want to learn more? Check the wikipedia page below" 
-  var isMobileDevice = $(window).width() <= minForBigDevices
-  var isBigDevice = $(window).width() > minForBigDevices
+  var isMobileDevice = $(window).width() <= minWidthBigDevice
+  var isBigDevice = $(window).width() > minWidthBigDevice
 
  
   let wikipediaLink ="https://www.wikipedia.org"
 
   let human_or_dog_span = props.dog_or_human === "neither" 
-                                              ? (<span className="custom-font-xxlarge">Sorry! We couldn't detect a dog or a human</span>)
+                                              ? (<span className="custom-font-xxlarge">Sorry! We couldn't detect a dog or a human.</span>)
                                               : (<span>you are a <span className="outline-text">{props.dog_or_human}</span> </span>)
   let breed_span = props.dog_or_human === "neither" 
-                                       ? (<span className="custom-font-xxlarge">Please, try again with another image. </span>) 
-                                       : (<span>Your breed is : <span className="outline-text">{props.breed}</span></span>)
+                                       ? (<span className="custom-font-xxlarge"> Please, try again with another image. </span>) 
+                                       : (<span>Your breed is <span className="outline-text">{props.breed}</span></span>)
 
 
 
 if( isMobileDevice ){
-  justifyClass = 'text-center bg-color-white  gx-0 ' + phoneUIClasses
-  leftHalfClass="d-flex justify-content-start custom-font-xxxlarge  custom-font-bold col-4 gx-4 custom-margin-left square-wrapper "
+  mainContentLayoutClasses = 'text-center bg-color-white  gx-0 ' + phoneUIClasses
+  leftSideLayoutClasses="d-flex justify-content-between  custom-font-xxxlarge  custom-font-bold col-4 gx-4 custom-margin-left square-wrapper "
 
-  wikiText = "link to Wiki: "  
+  wikiText = ""  
   
   leftSideHtml = (     
-    <div id="left-side-html" className="custom-margin-top-1 text-black  custom-font-bold custom-font-family capitalize">
-          {human_or_dog_span}
-    {breed_span}
+    <div id="left-side-html" className="text-black  custom-font-bold custom-font-family capitalize">
+     <div>{human_or_dog_span}</div>
+        <div>{breed_span}</div>
       </div>
   
       );
@@ -75,15 +76,16 @@ if( isMobileDevice ){
 }
 
 if( isBigDevice ){
-  justifyClass = 'text-center bg-color-white  gx-0 ' + laptopClasses
-  leftHalfClass=" custom-font-xxxlarge  custom-font-bold col-4 gx-4 custom-margin-left square-wrapper "
+  mainContentLayoutClasses = 'text-center bg-color-white  gx-0 ' + laptopClasses
+  leftSideLayoutClasses=" d-flex justify-content-start custom-font-xxxlarge  custom-font-bold col-4 gx-4 custom-margin-left square-wrapper "
 
   wikiText = "Want to learn more? Check the wikipedia page below"
 
   leftSideHtml = (     
     <div id="left-side-html" className="custom-margin-top-7 text-black  custom-font-bold custom-font-family capitalize">
-          {human_or_dog_span}
-    {breed_span}
+          
+        <div>{human_or_dog_span}</div>
+        <div>{breed_span}</div>
       </div>
   
       );
@@ -91,8 +93,8 @@ if( isBigDevice ){
 }
  function resizeHandler(){
   
-    if($(window).width() <= minForBigDevices){
-      console.log("im in")
+    if($(window).width() <= minWidthBigDevice){
+      
      $('#main-content').removeClass(laptopClasses).addClass(phoneUIClasses)
      $('#leftHalf').addClass('d-flex justify-content-start') 
      $("#wiki-text").text(mobileWikiText)
@@ -100,7 +102,7 @@ if( isBigDevice ){
                       
     }
    console.log(window.innerWidth)
-    if($(window).width() > minForBigDevices){
+    if($(window).width() > minWidthBigDevice){
       
       $('#main-content').addClass(laptopClasses).removeClass(phoneUIClasses)
       $('#leftHalf').removeClass('d-flex justify-content-start')           
@@ -116,11 +118,11 @@ if( isBigDevice ){
 
   switch(props.dog_or_human){
     case "dog":
-      toast.success(`Dog detected !`, {theme: "colored",})
+      toast.success(`Dog Detected !`, {theme: "colored",})
       break
 
     case "human": 
-      toast.success(`Dog Person !`, {theme: "dark",})
+      toast.success(`Person Detected !`, {theme: "dark",})
       break
 
     case "neither":
@@ -139,8 +141,8 @@ if( isBigDevice ){
                 ? null 
                 : (
                 <div>
-                  <div id="wiki-text"className="custom-font-xxlarge text-black custom-font-bold custom-font-family ">
-                    {wikiText}
+                  <div id="wiki-text"className=" custom-font-xxlarge text-black custom-font-bold custom-font-family ">
+                    <span>{wikiText}</span>
                   </div>
                   
                   <Button
@@ -156,9 +158,9 @@ if( isBigDevice ){
               );
   
   return (
-    <div id="main-content" className={justifyClass}>
+    <div id="main-content" className={mainContentLayoutClasses}>
        
-      <Col id="leftHalf"  className={leftHalfClass}>
+      <Col id="leftHalf"  className={leftSideLayoutClasses}>
       {leftSideHtml}
       
         {wikiLink}

@@ -18,6 +18,7 @@ import random
 from pydantic import BaseModel,BaseConfig
 import datetime
 from unidecode import unidecode
+import os
 
 #toDO Download the Path vgg16. Then copy it into the correct place. 
 #Todo, hopefully, that would stop the long download time from the server every time.
@@ -118,7 +119,7 @@ async def home(canvasImage: UploadFile = File(...)):
                  data.append({"breed":dog_name,"href":link_to_breed_wiki})
     
     #the model produces a breed that is more generalized than the wikipedia list we are scrapping.
-    #for example, the model can predict a bulldog but wikipedia has atleast 7 sub-types of bulldog. We have no one to know which
+    #for example, the model can predict a bulldog but wikipedia has atleast 7 sub-types of bulldog. We have no way to know which
     #refers to the one we are looking for.
     #because of this, we create a list of bulldogs and then pick which one to show randomly.
     random_sub_breed = random.randint(0,len(data)-1)
@@ -137,6 +138,7 @@ async def home(canvasImage: UploadFile = File(...)):
     #, paragraphs=selected_breed["paragraphs"]
 
     print(prediction)
+    os.remove(temp_dog_image_path)
     return WikiPage( breed = selected_breed["breed"] , href=selected_breed["href"] ,dog_or_human=dog_or_human)
 
 face_cascade = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_alt.xml')

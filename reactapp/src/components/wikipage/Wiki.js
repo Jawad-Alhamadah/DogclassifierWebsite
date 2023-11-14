@@ -13,8 +13,14 @@ import OSMap from "../HomePage/OSMap";
 //<h1 id ="main-title">{wikiInfo.breed}</h1>
 
 function Wiki(props) {
-  const wikiInfo = props.location.state || {};
-  
+  let wikiInfo = props.location.state || {};
+  if (!props.location.state) wikiInfo = {
+    breed :"neither",
+    href:"none",
+    dog_or_human:"neither",
+    image:""
+    
+  }
   return (
     <div>
       

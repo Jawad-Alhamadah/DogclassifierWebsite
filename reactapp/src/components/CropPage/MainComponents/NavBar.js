@@ -36,7 +36,7 @@ function NavBar(props) {
         
         size="lg"
       >
-        Predict
+        Home
       </Button>
       
       

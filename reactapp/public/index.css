@@ -1,16 +1,40 @@
  
+ html, body {
+  margin: 0;
+  height: 100%;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  touch-action: none;
+  padding: 0;
+
+
+}
+ 
+ #root{
+
+  --mobile-width-breakpoint:540px;
+  --main-highlight-color:#10eded9e;
+  --main-highlight-outline:#000000;
+  --side-background-color:#b0ecfb70;
+  --mobile-side-background-color:#b0ecfb70;
+  
+ }
+
+
 
 #leftHalf{
-  background: #b0ecfb70;
+  background: var(--side-background-color);
   padding-left: 4%;
   
 }
 
 
 .outline-text{
-  -webkit-text-stroke-width: 2px;
-  -webkit-text-stroke-color: #046a7c;
-  color: #1fc9c98f;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: var(--main-highlight-outline);
+    color: var(--main-highlight-color);
+    font-size: 36px;
+
+  
 }
 .leftHalf-corner{
 
@@ -23,18 +47,18 @@
  
 }
 
-html, body {
-  margin: 0;
-  height: 100%;
-  font-family: Roboto, Helvetica, Arial, sans-serif;
-  touch-action: none;
 
 
+#wiki-text{
+  position: relative;
 }
+
 #wikiButton{
   width: 66%;
   margin-top: 30%;
-  margin-left:25%
+  margin-left: 25%;
+  position: relative;
+  min-width: 110px;
 }
 #map {
   width: 85%;
@@ -84,7 +108,7 @@ body{
 }
  #main-content{
  
-  height: 100vh; 
+   
   -webkit-mask-image:-webkit-gradient(linear, right top, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0.0.6)));
       
   
@@ -93,11 +117,23 @@ body{
  @media(max-width:540px){
   #main-content{
  
-    height:125vh; 
+     
     -webkit-mask-image:-webkit-gradient(linear, right top, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0.0.6)));
         
     
    }
+
+   .custom-font-xxxlarge{
+  
+    font: size 100%!important;
+  
+  }
+
+
+  .outline-text {
+
+    font-size: 21px;
+}
 
  }
 
@@ -332,6 +368,7 @@ animation-timing-function: linear;
  content:' '   ;
  position: absolute;
  background :rgb(27, 216, 245)  ;
+ border-radius: 10%;
  width:105%;
  height:100%;
  display: inline-block;
@@ -344,6 +381,7 @@ box-shadow: 5px 10px 18px #2f2d2d;
 -ms-animation-fill-mode: forwards;
 -o-animation-fill-mode: forwards;
 animation-fill-mode: forwards;
+
 }
 
 .card-glassy {
@@ -588,24 +626,56 @@ width:100%
 */
 
 
+@media(max-width:430px){
+  
+  #paragraphs-div{
+   
+    margin-left: 15%;
+    /* margin-top: 10px; */
+    /* margin-right: 8%; */
+    /* width: 30%; */
+     min-width: 300px; 
+    /* max-height: 281px; */
+    /* max-width: 300px; */
+    width: 78%;
+    height: 50%;
+    
+
+  }
+}
+
+
+
 @media(max-width:540px){
   
   #paragraphs-div{
-     margin-left: 15%;
-     min-width: 260px; 
+     margin-left: 11%;
+     min-width: 280px; 
   
   }
   #leftHalf{
-    background: #1e8062;
-    padding-left: 4%;
+    background: var(--side-background-color);
+    padding-left: 0%;
     width: 100%;
     min-height: 350px;
+    margin-top: 8%;
   }
 
   #wikiButton{
     margin-top: 0%; 
      margin-left: 0%;
+     min-width: 141px;
+     padding-right: 42%;
+    height: 17%;
   }
+
+  .btn-outline-danger {
+   
+    /* border-color: #dc3545; */
+    color: white!important;
+    background: #b10a0a!important;
+}
+
 }
 
 

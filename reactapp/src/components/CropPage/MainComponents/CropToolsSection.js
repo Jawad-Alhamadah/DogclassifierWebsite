@@ -9,6 +9,8 @@ import useWindowDimensions from "../../CustomHooks/windowDimensions";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
+import deviceConfig from "../../../deviceConfig"
+import $ from"jquery"
 const OSMQuery = require("../../../OSMQuerries/OSMQuerries")
 
 
@@ -208,10 +210,24 @@ const CropBar = forwardRef(function (props, ref) {
                                             </div>
                                            :<span >Check dog breed</span>
   
+                                           $(window).width()
+let cropBarClasses = "row justify-content-center pt-3  p-0 g-0";
+if ($(window).width()<deviceConfig.minWidthBigDevice){
+  cropBarClasses = "row justify-content-between pt-3  p-0 g-0"
+}
+
+$(window).resize(resizeHandler);
+
+function resizeHandler(){
+  if ($(window).width()<deviceConfig.minWidthBigDevice){
+    cropBarClasses = "row justify-content-between pt-3  p-0 g-0"
+  }
+  
+}
   return (
     <div>
      
-      <Row className="row justify-content-center pt-3  p-0 g-0">
+      <Row className={cropBarClasses}>
         <ImageToCanvasButton
           drawUploadImage={drawUploadImage}
           className="col-2 bg-secondary m-1"
