@@ -61,7 +61,7 @@ function HomeScreen(props) {
 
 if( isMobileDevice ){
   mainContentLayoutClasses = 'text-center bg-color-white  gx-0 ' + phoneUIClasses
-  leftSideLayoutClasses="d-flex justify-content-between  custom-font-xxxlarge  custom-font-bold col-4 gx-4 custom-margin-left square-wrapper "
+  leftSideLayoutClasses=" d-flex justify-content-between  custom-font-xxxlarge  custom-font-bold col-4 gx-4 custom-margin-left square-wrapper "
 
   wikiText = ""  
   
@@ -77,7 +77,7 @@ if( isMobileDevice ){
 
 if( isBigDevice ){
   mainContentLayoutClasses = 'text-center bg-color-white  gx-0 ' + laptopClasses
-  leftSideLayoutClasses=" d-flex justify-content-start custom-font-xxxlarge  custom-font-bold col-4 gx-4 custom-margin-left square-wrapper "
+  leftSideLayoutClasses=" justify-content-start custom-font-xxxlarge  custom-font-bold col-4 gx-4 custom-margin-left square-wrapper "
 
   wikiText = "Want to learn more? Check the wikipedia page below"
 
@@ -96,7 +96,7 @@ if( isBigDevice ){
     if($(window).width() <= minWidthBigDevice){
       
      $('#main-content').removeClass(laptopClasses).addClass(phoneUIClasses)
-     $('#leftHalf').addClass('d-flex justify-content-start') 
+     $('#leftHalf').addClass('d-flex justify-content-between') 
      $("#wiki-text").text(mobileWikiText)
      $("#left-side-html").removeClass("custom-margin-top-7")
                       

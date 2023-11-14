@@ -1,6 +1,6 @@
 import { React, forwardRef, useEffect, useState } from "react";
 import useWindowDimensions from "../../CustomHooks/windowDimensions";
-
+import deviceConfig from "../../../deviceConfig"
 const CanvasArea = forwardRef(function (props, ref) {
   //let [image, setImage] = useState(props.image);
   let [scale, setScale] = useState(1);

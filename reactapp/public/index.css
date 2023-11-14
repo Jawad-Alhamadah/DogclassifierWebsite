@@ -12,7 +12,7 @@
  #root{
 
   --mobile-width-breakpoint:540px;
-  --main-highlight-color:#10eded9e;
+  --main-highlight-color:#09efefcc;;
   --main-highlight-outline:#000000;
   --side-background-color:#b0ecfb70;
   --mobile-side-background-color:#b0ecfb70;
@@ -132,7 +132,7 @@ body{
 
   .outline-text {
 
-    font-size: 21px;
+    font-size: 26px;
 }
 
  }
@@ -604,27 +604,7 @@ width:100%
  
  }
 
-  /*
-@media(max-width:1200px){
-  .custom-font-xxxlarge{
-     font-size: 2rem; 
-
-     
-  }
-
-  .custom-font-xxlarge{
-    font-size: 1rem; 
- }
-}
-
-
-@media(max-width:750px){
-  .custom-font-xxxlarge{
-     font-size: 1rem; 
-  }
-}
-*/
-
+ 
 
 @media(max-width:430px){
   
@@ -649,7 +629,7 @@ width:100%
 @media(max-width:540px){
   
   #paragraphs-div{
-     margin-left: 11%;
+     margin-left: 22%;
      min-width: 280px; 
   
   }
@@ -664,7 +644,7 @@ width:100%
   #wikiButton{
     margin-top: 0%; 
      margin-left: 0%;
-     min-width: 141px;
+     min-width: 130px;
      padding-right: 42%;
     height: 17%;
   }
