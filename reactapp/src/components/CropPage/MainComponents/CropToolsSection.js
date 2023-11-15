@@ -2,28 +2,32 @@ import { React, forwardRef, useState } from "react";
 import ImageToCanvasButton from "./ImageToCanvasButton";
 import axios from "axios";
 import { createCanvas } from "canvas";
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 //import Button from "./StyleComponents/Button"
-import {Row} from "react-bootstrap";
+import { Row } from "react-bootstrap";
 import useWindowDimensions from "../../CustomHooks/windowDimensions";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
-import deviceConfig from "../../../deviceConfig"
-import $ from"jquery"
-const OSMQuery = require("../../../OSMQuerries/OSMQuerries")
+//import deviceConfig from "../../../deviceConfig"
+//import $ from"jquery"
+//const OSMQuery = require("../../../OSMQuerries/OSMQuerries")
 
 
 
 const CropBar = forwardRef(function (props, ref) {
   const { height, width } = useWindowDimensions();
   const history = useHistory();
+
   let [isCropLoading, setIsCropLoading] = useState(false);
+  //let [cropClasses, setCropClasses] = useState()
+  //let isMobileDevice = window.innerWidth <= deviceConfig.minWidthBigDevice
+  let cropBarClasses = "row justify-content-center pt-3  p-0 g-0";
 
   async function crop(event) {
     setIsCropLoading(true)
     let ctx = ref.current.getContext("2d");
- 
+
     //we subtract by three to avoid cropping the red outline while cropping the image
     //and we shift the corner of the crop by two to re-adjust the croping position
     let cropingWidth = props.cropRect.width - 3;
@@ -41,10 +45,10 @@ const CropBar = forwardRef(function (props, ref) {
       cropingHeight
     );
     let tempCanvas = createTemporaryImageCanvas(cropingWidth, cropingHeight, imgData);
-    let  {fd,dataURL} = createFormDataFromCanvas(tempCanvas);
+    let { fd, dataURL } = createFormDataFromCanvas(tempCanvas);
 
 
-    
+
     // let MLModelResponse = await axios({
     //   method: "post",
     //   url: "http://127.0.0.1:1000",
@@ -59,52 +63,52 @@ const CropBar = forwardRef(function (props, ref) {
       data: fd,
       headers: { "Content-Type": "multipart/form-data" },
     })
-    .then(
-      (response) => {
-        let href = response.data.href;
-        let breed = response.data.breed;
-        //let paragraphs = response.data.paragraphs;
-        let dog_or_human = response.data.dog_or_human;
+      .then(
+        (response) => {
+          let href = response.data.href;
+          let breed = response.data.breed;
+          //let paragraphs = response.data.paragraphs;
+          let dog_or_human = response.data.dog_or_human;
 
-      
-        history.push({
-          pathname: "/wiki",
-          search: "?query=abc",
-          state: {
-            breed: breed,
-            href: href,
-           // paragraphs: paragraphs,
-            image: dataURL,
-            dog_or_human: dog_or_human,
-          },
-        });
-      },
-      (error) => {
-        toast.error("."+error, {
-          
-          theme: "dark",
+
+          history.push({
+            pathname: "/wiki",
+            search: "?query=abc",
+            state: {
+              breed: breed,
+              href: href,
+              // paragraphs: paragraphs,
+              image: dataURL,
+              dog_or_human: dog_or_human,
+            },
           });
-          
-        setIsCropLoading(false)
-        console.log(error);
-      }
-    );
-  
+        },
+        (error) => {
+          toast.error("" + error + ". failed to connect.", {
+
+            theme: "dark", autoClose: 5000, pauseOnFocusLoss: true
+          });
+
+          setIsCropLoading(false)
+          //console.log(error);
+        }
+      );
+
 
 
     //var config = { headers: { "Content-Type": "text/xml" } };
-   // let OSMResponse = await axios.post(
+    // let OSMResponse = await axios.post(
     //  "https://overpass-api.de/api/interpreter",
-   //   nearbyShelters,
-   //   config
+    //   nearbyShelters,
+    //   config
     //);
 
     //reRouteToPage("/wiki",MLModelResponse,dataURL, OSMResponse);
   } /////////////////////
 
   async function drawUploadImage(data) {
-   
-  
+
+
     let img = data.image;
 
     let ctx = ref.current.getContext("2d");
@@ -120,14 +124,14 @@ const CropBar = forwardRef(function (props, ref) {
       resizeHeight: resizedScales.height,
       resizeQuality: "high",
     });
-   
+
     ctx.drawImage(resizedImg, 0, 0);
 
     props.setImage(resizedImg);
   }
   //this function resizes images that far exceeds the size of the canvas.
   //this is useful to reduced the need to resize images when uploaded
-  function resizeImage(imgWidth =224, imgHeight=224, canvasWidth=500, canvasHeight=500) {
+  function resizeImage(imgWidth = 224, imgHeight = 224, canvasWidth = 500, canvasHeight = 500) {
     let ratio = 0.9; //default ratio incase both width and height are equal
     let isImageTooWide = width > canvasWidth;
     let isImageTooLong = height > canvasHeight;
@@ -144,8 +148,8 @@ const CropBar = forwardRef(function (props, ref) {
         continue
       }
 
-       imgWidth = imgWidth - 5;
-       imgHeight = imgHeight - ratio * 5;
+      imgWidth = imgWidth - 5;
+      imgHeight = imgHeight - ratio * 5;
     }
     return { width: imgWidth, height: imgHeight };
   }
@@ -173,11 +177,11 @@ const CropBar = forwardRef(function (props, ref) {
     var dataURL = tempCanvas.toDataURL("image/jpeg", 0.5);
     var blob = dataURItoBlob(dataURL);
     var fd = new FormData();
-  
+
     fd.append("canvasImage", blob);
     return { fd, dataURL };
   }
-  
+
   function createTemporaryImageCanvas(cropingWidth, cropingHeight, imgData) {
     let tempCanvas = createCanvas(cropingWidth, cropingHeight);
     let tempCtx = tempCanvas.getContext("2d");
@@ -185,48 +189,37 @@ const CropBar = forwardRef(function (props, ref) {
     return tempCanvas;
   }
 
-  function reRouteToPage( path,response,dataURL, res) {
-    let href =   response.data.href;
-    let breed = response.data.breed;
-    let dog_or_human = response.data.dog_or_human;
-    
-    history.push({
-      pathname:path,
-      search: "?query=abc",
-      state: {
-        breed: breed,
-        href: href,
-        // paragraphs: paragraphs,
-        image: dataURL,
-        dog_or_human: dog_or_human,
-        locations: res.data.elements,
-      },
-    });
-  }
+  // function reRouteToPage( path,response,dataURL, res) {
+  //   let href =   response.data.href;
+  //   let breed = response.data.breed;
+  //   let dog_or_human = response.data.dog_or_human;
 
-    let cropButtonTextSpan = isCropLoading? <div>
-                                             <span >Loading...</span>
-                                             <span class=" spinner-border spinner-border-sm"></span>
-                                            </div>
-                                           :<span >Check dog breed</span>
-  
-                                           $(window).width()
-let cropBarClasses = "row justify-content-center pt-3  p-0 g-0";
-if ($(window).width()<deviceConfig.minWidthBigDevice){
-  cropBarClasses = "row justify-content-between pt-3  p-0 g-0"
-}
+  //   history.push({
+  //     pathname:path,
+  //     search: "?query=abc",
+  //     state: {
+  //       breed: breed,
+  //       href: href,
+  //       // paragraphs: paragraphs,
+  //       image: dataURL,
+  //       dog_or_human: dog_or_human,
+  //       locations: res.data.elements,
+  //     },
+  //   });
+  // }
 
-$(window).resize(resizeHandler);
+  let cropButtonTextSpan = isCropLoading ? <div>
+    <span >Loading...</span>
+    <span className=" spinner-border spinner-border-sm"></span>
+  </div>
+    : <span >Check dog breed</span>
 
-function resizeHandler(){
-  if ($(window).width()<deviceConfig.minWidthBigDevice){
-    cropBarClasses = "row justify-content-between pt-3  p-0 g-0"
-  }
-  
-}
+  // $(window).width()
+
+
   return (
     <div>
-     
+
       <Row className={cropBarClasses}>
         <ImageToCanvasButton
           drawUploadImage={drawUploadImage}

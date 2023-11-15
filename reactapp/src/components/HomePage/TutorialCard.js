@@ -37,13 +37,13 @@ function TutorialCard(props) {
     props.dog_or_human === "dog"
       ? `Cute as a Button!`
       : props.dog_or_human === "human"
-      ? `Lookin' sharp!`
-      : "Cool Image!";
+        ? `Lookin' sharp!`
+        : "Cool Image!";
 
   return (
     <div className="square-wrapper3">
       <div
-       
+
         className="card-glassy text-white square-wrapper2"
         id="breed-glass-card"
 

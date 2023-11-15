@@ -1,9 +1,9 @@
 import React from "react";
 import NavBar from "../CropPage/MainComponents/NavBar";
 import HomeScreen from "../HomePage/HomeScreen";
-import { ToastContainer, toast } from 'react-toastify';
-import { Slide, Zoom, Flip, Bounce } from 'react-toastify';
-import OSMap from "../HomePage/OSMap";
+//import { ToastContainer, toast } from 'react-toastify';
+//import { Slide, Zoom, Flip, Bounce } from 'react-toastify';
+//import OSMap from "../HomePage/OSMap";
 
 //import {Button, Alert,Breadcrumb,Card,Container,Row,Col,Nav,Navbar,NavDropdown} from 'react-bootstrap'
 //<a href={wikiInfo.href}>{wikiInfo.breed}</a>
@@ -15,23 +15,23 @@ import OSMap from "../HomePage/OSMap";
 function Wiki(props) {
   let wikiInfo = props.location.state || {};
   if (!props.location.state) wikiInfo = {
-    breed :"neither",
-    href:"none",
-    dog_or_human:"neither",
-    image:""
-    
+    breed: "neither",
+    href: "none",
+    dog_or_human: "neither",
+    image: ""
+
   }
   return (
     <div>
-      
+
       <NavBar backgroundColor="dark-purple" />
       <div id="text-body">
-      <img
-        src="glass1.jpg"
-        className="custom-fade-in-2"
-        id="home-page-background"
-        alt="backGround"
-      ></img>
+        <img
+          src="glass1.jpg"
+          className="custom-fade-in-2"
+          id="home-page-background"
+          alt="backGround"
+        ></img>
         <div id="whole-page-home">
           <div>
             <HomeScreen

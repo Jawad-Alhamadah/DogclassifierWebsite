@@ -1,6 +1,6 @@
 import { React, forwardRef, useEffect, useState } from "react";
 import useWindowDimensions from "../../CustomHooks/windowDimensions";
-import deviceConfig from "../../../deviceConfig"
+//import deviceConfig from "../../../deviceConfig"
 const CanvasArea = forwardRef(function (props, ref) {
   //let [image, setImage] = useState(props.image);
   let [scale, setScale] = useState(1);
@@ -17,7 +17,7 @@ const CanvasArea = forwardRef(function (props, ref) {
   });
 
   useEffect(() => {
-    setCtx(ref.current.getContext("2d",{ willReadFrequently: true }));
+    setCtx(ref.current.getContext("2d", { willReadFrequently: true }));
     setScale(props.sliderScale);
   }, []);
 
@@ -60,35 +60,35 @@ const CanvasArea = forwardRef(function (props, ref) {
   }
 
   useEffect(() => {
-   
+
   }, []);
   useEffect(() => {
     if (props.image !== "") props.setImage(props.image);
-  }, [props]);
+  }, [props, props.image]);
 
   useEffect(() => {
     if (props.image !== "") rescaleImage();
-  }, [props]);
+  }, [props.image]);
 
   useEffect(() => {
     if (props.image !== "") rescaleImage();
-  }, [width, height]);
+  }, [width, height, props.image]);
 
-  
+
   async function handleMouseDown(event) {
 
     var clientY;
     var clientX;
-    if(event.touches){
-       clientY = Math.round(event.touches[0].clientY)
-       clientX = Math.round(event.touches[0].clientX)
+    if (event.touches) {
+      clientY = Math.round(event.touches[0].clientY)
+      clientX = Math.round(event.touches[0].clientX)
     }
-    else{
+    else {
       clientY = event.clientY
       clientX = event.clientX
     }
     //console.log(event)
-   // event.preventDefault()
+    // event.preventDefault()
     setPostion((prevState) => ({
       ...prevState,
       PrevX: clientX,
@@ -99,17 +99,17 @@ const CanvasArea = forwardRef(function (props, ref) {
 
   function handleMouseUp(event) {
     //console.log(event)
-   // event.preventDefault()
+    // event.preventDefault()
     setIsMouseDown(false);
   }
   function handleMouseMove(event) {
-  
-    var clientY;
-    if(event.touches) clientY = Math.round(event.touches[0].clientY)
-    else{clientY = event.clientY}
 
-    console.log(clientY)
-   // event.preventDefault()
+    var clientY;
+    if (event.touches) clientY = Math.round(event.touches[0].clientY)
+    else { clientY = event.clientY }
+
+    //console.log(clientY)
+    // event.preventDefault()
     if (isMouseDown && props.image !== "") drawCanvasImage(event);
     //if (event.clientY < 195) setIsMouseDown(false);
     if (clientY < 195) setIsMouseDown(false);
@@ -117,11 +117,11 @@ const CanvasArea = forwardRef(function (props, ref) {
   async function drawCanvasImage(event) {
     var clientY;
     var clientX;
-    if(event.touches){
-       clientY = Math.round(event.touches[0].clientY)
-       clientX = Math.round(event.touches[0].clientX)
+    if (event.touches) {
+      clientY = Math.round(event.touches[0].clientY)
+      clientX = Math.round(event.touches[0].clientX)
     }
-    else{
+    else {
       clientY = event.clientY
       clientX = event.clientX
     }
@@ -130,7 +130,7 @@ const CanvasArea = forwardRef(function (props, ref) {
     let resizedImg;
     if (!isMount) {
       setIsMount(true);
-      
+
       resizedImg = await createImageBitmap(props.image, {
         resizeWidth: Math.ceil(props.image.width + props.image.width * ratio),
         resizeHeight: Math.ceil(props.image.height + props.image.height * ratio),
@@ -140,7 +140,7 @@ const CanvasArea = forwardRef(function (props, ref) {
     } else {
       resizedImg = resizedImage;
     }
-    
+
 
     let centered_X = width / 2 - props.cropRect.width / 2;
     let centered_Y = height / 2 - props.cropRect.height / 1.4;

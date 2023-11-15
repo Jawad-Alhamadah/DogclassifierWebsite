@@ -1,9 +1,9 @@
 import { React, useEffect } from "react";
-import useWindowDimensions from "../CustomHooks/windowDimensions";
+//import useWindowDimensions from "../CustomHooks/windowDimensions";
 import HomeScreen from "./HomeScreen"
 import TutorialScreen from "./TutorialScreen";
 import ContactUsPage from "./ContactUsPage"
- 
+
 
 
 //<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
@@ -14,7 +14,7 @@ import ContactUsPage from "./ContactUsPage"
 //Photo by Adrienn87 form PxHere
 function HomePage() {
   useEffect(() => {
-     
+
     const secondPageBackGroundObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         const image = entry.target.querySelectorAll("img");
@@ -45,14 +45,14 @@ function HomePage() {
     });
     secondPageCardObserver.observe(document.querySelector(".square-wrapper3"));
   }, []);
-  const { height, width } = useWindowDimensions();
+  // const { height, width } = useWindowDimensions();
   return (
     <div id="whole-page-home">
-      <HomeScreen/>
-  
-      <TutorialScreen/>
-       <ContactUsPage/>
-      
+      <HomeScreen />
+
+      <TutorialScreen />
+      <ContactUsPage />
+
     </div>
   );
 }
