@@ -69,7 +69,6 @@ async def updateWiki ():
     soup = scrap(url ="https://en.wikipedia.org/wiki/List_of_dog_breeds")
     print("gs",links)
     links =  soup.select("#mw-content-text > .mw-parser-output > div > ul > li > a")
-    print()
     return
 
 
@@ -88,7 +87,7 @@ async def home(canvasImage: UploadFile = File(...)):
     prediction = run_app(temp_dog_image_path)
     breed= prediction[0]
     dog_or_human = prediction[1]
-    print(dog_or_human)
+    
     if(dog_or_human =="neither"):
             return WikiPage( breed = "neither" , href="none" ,dog_or_human=dog_or_human)
 
@@ -136,7 +135,6 @@ async def home(canvasImage: UploadFile = File(...)):
     # sub_headings = [x for x in sub_headings if x.get("id") not in unwanted_heading_ids]
     # selected_breed["paragraphs"] = [x.text for x in paragraphs]
     #, paragraphs=selected_breed["paragraphs"]
-
     print(prediction)
     os.remove(temp_dog_image_path)
     return WikiPage( breed = selected_breed["breed"] , href=selected_breed["href"] ,dog_or_human=dog_or_human)
@@ -145,6 +143,8 @@ face_cascade = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_alt.x
 
 image_dim= 224
 use_cuda = torch.cuda.is_available()
+
+
 transform={}
 transform["train"] = transforms.Compose([        
         transforms.Resize(image_dim),                    
@@ -182,8 +182,8 @@ transform["valid"] = transforms.Compose([
 
 VGG16 = models.vgg16(pretrained=True)
 if use_cuda:
-    VGG16 = VGG16.cuda()
-next(VGG16.parameters()).is_cuda
+   VGG16 = VGG16.cuda()
+next(VGG16.parameters())#.is_cuda
 
 def face_detector(img_path):
     img = cv2.imread(img_path)
@@ -205,7 +205,9 @@ def predict_breed_transfer(img_path):
     target = torch.stack(tuple(target))
     data=[]
     image = Image.open(img_path)
-    transformed_data= transform["valid"](image).cuda()
+    transformed_data= transform["valid"](image)#.cuda()
+    if use_cuda:
+        transformed_data= transform["valid"](image).cuda()
     data.append(transformed_data)
     data = torch.stack(data)
     
@@ -231,7 +233,10 @@ def VGG16_predict(img_path):
             )
         ])
     img_tensor = transform(image)
-    batch = (img_tensor.unsqueeze(0)).cuda()
+    
+    batch = (img_tensor.unsqueeze(0))#.cuda()
+    if use_cuda:
+        batch = (img_tensor.unsqueeze(0)).cuda()
 
     prediction = VGG16(batch)
     prediction=prediction.cpu().detach().numpy()
@@ -250,9 +255,9 @@ for par in model_transfer.parameters():
 model_transfer.classifier[6]=nn.Linear(model_transfer.classifier[6].in_features,133)
 
 
-use_cuda = torch.cuda.is_available()
+#use_cuda = torch.cuda.is_available()
 if use_cuda:
-    model_transfer = model_transfer.cuda()
+   model_transfer = model_transfer.cuda()
     
 
 
@@ -269,12 +274,16 @@ def predict_breed_transfer(img_path):
     target = torch.stack(tuple(target))
     data=[]
     image = Image.open(img_path)
-    transformed_data= transform["valid"](image).cuda()
+   
+
+    transformed_data= transform["valid"](image)#.cuda()
+    if use_cuda:
+        transformed_data= transform["valid"](image).cuda()
     data.append(transformed_data)
     data = torch.stack(data)
     
     if use_cuda:
-        data, target = data.cuda(), target.cuda()
+       data, target = data.cuda(), target.cuda()
     output = model_transfer(data)
     pred = output.data.max(1, keepdim=True)[1]
     return breeds_dict[pred.item()]
