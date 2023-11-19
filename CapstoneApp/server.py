@@ -38,7 +38,8 @@ breeds_dict ={0: 'Affenpinscher', 1: 'Afghan_hound', 2: 'Airedale_terrier', 3: '
 #allowed origins
 ##
 #origins = ["http://localhost:3000","https://en.wikipedia.org"]
-origins = ["http://localhost:3005","http://localhost:3006","https://en.wikipedia.org","http://192.168.1.6:3005"]
+#origins = ["http://localhost:3005","http://localhost:3006","https://en.wikipedia.org","http://192.168.1.6:3005"]
+origins = ["*"]
 soup = scrap(url ="https://en.wikipedia.org/wiki/List_of_dog_breeds")
 links =  soup.select("#mw-content-text > .mw-parser-output > div > ul > li > a")
 
