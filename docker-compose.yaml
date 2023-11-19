@@ -3,6 +3,7 @@ services:
   dogserver:
     build: ./CapstoneApp
     container_name: dogServer_C1
+    image: ${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/dog-app:v1
     ports:
       - 1000:8000
 #    deploy:
@@ -17,6 +18,7 @@ services:
       #        - video
   reactapp:
     build: ./CapstoneApp/reactapp
+    image: ${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/react-app:v1
     container_name: reactApp_C1
     ports:
        - 3005:3005
