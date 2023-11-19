@@ -1,2 +1,4 @@
 *.pt filter=lfs diff=lfs merge=lfs -text
 model_transfer.pt filter=lfs diff=lfs merge=lfs -text
+*.pth filter=lfs diff=lfs merge=lfs -text
+vgg16-397923af filter=lfs diff=lfs merge=lfs -text
