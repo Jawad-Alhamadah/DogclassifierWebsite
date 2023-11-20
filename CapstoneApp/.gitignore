@@ -3,5 +3,10 @@ node_modules
 /reactapp/node_modules
 ./reactapp/node_modules
 
+./reactapp/*
+
+/reactapp/*
+reactapp
+git
 data/*
 
