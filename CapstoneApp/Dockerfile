@@ -8,7 +8,7 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-COPY ./vgg16/vgg16-397923af.pth /root/.cache/torch/hub/checkpoints/vgg16-397923af.pth
+#COPY ./vgg16/vgg16-397923af.pth /root/.cache/torch/hub/checkpoints/vgg16-397923af.pth
 
 EXPOSE 8000
 

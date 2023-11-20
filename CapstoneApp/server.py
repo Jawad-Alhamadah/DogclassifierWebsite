@@ -19,7 +19,7 @@ from pydantic import BaseModel,BaseConfig
 import datetime
 from unidecode import unidecode
 import os
-
+from torchvision.models import  VGG16_Weights
 #toDO Download the Path vgg16. Then copy it into the correct place. 
 #Todo, hopefully, that would stop the long download time from the server every time.
 
@@ -181,7 +181,7 @@ transform["valid"] = transforms.Compose([
         ])
 
 
-VGG16 = models.vgg16(pretrained=True)
+VGG16 =torch.hub.load('pytorch/vision:v0.13.0', 'vgg16', pretrained=True) #models.vgg16(weights=VGG16_Weights.DEFAULT) #(#pretrained=True)
 if use_cuda:
    VGG16 = VGG16.cuda()
 next(VGG16.parameters())#.is_cuda
@@ -250,7 +250,7 @@ def VGG16_predict(img_path):
 
 
 
-model_transfer = models.vgg16(pretrained=True)
+model_transfer = torch.hub.load('pytorch/vision:v0.13.0', 'vgg16', pretrained=True)#models.vgg16(weights=VGG16_Weights.DEFAULT)#(pretrained=True)
 for par in model_transfer.parameters():
      par.requires_grad= False
 model_transfer.classifier[6]=nn.Linear(model_transfer.classifier[6].in_features,133)
