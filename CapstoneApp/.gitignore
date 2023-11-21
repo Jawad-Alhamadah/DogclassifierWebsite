@@ -4,5 +4,5 @@ node_modules
 ./reactapp/node_modules
 
 data/*
-'model_transfer.pt'
+
 
