@@ -90,6 +90,7 @@ async def home(canvasImage: UploadFile = File(...)):
     dog_or_human = prediction[1]
     
     if(dog_or_human =="neither"):
+            os.remove(temp_dog_image_path)
             return WikiPage( breed = "neither" , href="none" ,dog_or_human=dog_or_human)
 
 
@@ -137,7 +138,7 @@ async def home(canvasImage: UploadFile = File(...)):
     # selected_breed["paragraphs"] = [x.text for x in paragraphs]
     #, paragraphs=selected_breed["paragraphs"]
     print(prediction)
-    os.remove(temp_dog_image_path)
+    
     return WikiPage( breed = selected_breed["breed"] , href=selected_breed["href"] ,dog_or_human=dog_or_human)
 
 face_cascade = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_alt.xml')

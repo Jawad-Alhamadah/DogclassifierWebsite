@@ -55,7 +55,7 @@ if keep_flag in sys.argv and delete_chunks_flag in sys.argv:
 
 
 user_cont_or_stop="yes"
-if keep_flag not in sys.argv:
+if keep_flag not in sys.argv and delete_chunks_flag not in sys.argv :
     user_cont_or_stop = input(f"""{bold}{bcolors.WARNING}If you continue, data chunks will combine into a file and the chunks will be {bcolors.FAIL}DELETED !{bcolors.BOLD}{bcolors.OKGREEN} (exit and use flag {bcolors.BOLD}{bcolors.OKCYAN}--keep{bcolors.OKGREEN} to combine and keep the chunks)
 {bold}{bcolors.WARNING}  do you want to continue?{fail} y/n {bcolors.ENDC}""")
 
@@ -65,7 +65,6 @@ if user_cont_or_stop.lower() !="yes" and user_cont_or_stop !="y":
 
 
 index =1
-
 
 file_copy_name_index = sys.argv.index(filename_flag) + 1 
 file_copy_name = sys.argv[file_copy_name_index]
