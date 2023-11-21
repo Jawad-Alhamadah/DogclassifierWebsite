@@ -9,4 +9,7 @@ model_scratch.pt
 model_transfer.pt
 'model_scratch.pt'
 'model_transfer.pt'
+/modelContainer/copy.pt
+'/modelContainer/copy.pt'
+./modelContainer/copy.pt
 

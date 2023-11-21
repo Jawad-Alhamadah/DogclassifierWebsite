@@ -1,8 +1,7 @@
 import sys
 import os
 import math
-
-
+from alive_progress import alive_bar;
 filename_flag ="--filename"
 bytes_flag ="--size-in-bytes"
 help_flag ="--help"
@@ -64,20 +63,29 @@ if not os.path.isfile(file_to_split):
 #ext = file_to_split.split(".")[1]
 
 model_file = open(file_to_split,mode="rb")
-data = model_file.read(chunk_size)
+#data = model_file.read(chunk_size)
 files_list=[]
 file_name_counter=1
 file_common_name="-temp-chunk.txt"
 
+file_size = os.stat(file_to_split).st_size
+file_split_count = math.ceil(file_size/chunk_size)
 
-while data:
-    file_name=str(file_name_counter)+file_common_name
-    file = open(file_name,mode="wb")
-    file.write(data)
-    file.close()
-    #files_list.append(file_name)
-    file_name_counter+=1
-    data=model_file.read(chunk_size)
+# import time
+# with alive_bar(5000,bar="smooth") as bar:
+#     for i in range(5000):
+#         time.sleep(.001)
+#         bar()
+with alive_bar(file_split_count,bar="blocks",unit=" File",title="Split") as bar:
+    for i in range(1,file_split_count+1) :
+        data = model_file.read(chunk_size)
+        file_name=str(file_name_counter)+file_common_name
+        file = open(file_name,mode="wb")
+        file.write(data)
+        file.close()
+        #files_list.append(file_name)
+        file_name_counter+=1
+        bar()
 
 
 unit= "Kb" if chunk_size>=KB_CONVERSION_UNIT else "B"
@@ -95,9 +103,9 @@ if chunk_size>=MB_CONVERSION_UNIT :
 
 
 
-print(f"""{green}{bold}  * Split successful *
-      {grey} Number of chunks created : {cyan} {file_name_counter-1}
-      {grey} Byte Size per chunk : {cyan} {chunk_in_MB} {unit}  - {chunk_size} Bytes  
+print(f"""{green}{bold} \n  * File Split Successful *
+      {grey}    Number of chunks created : {cyan} {file_name_counter-1}
+      {grey}    Byte Size per chunk : {cyan} {chunk_in_MB} {unit}  - {chunk_size} Bytes  
          {end_color}""")  
 model_file.close()
 

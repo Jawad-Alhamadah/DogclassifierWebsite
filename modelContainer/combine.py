@@ -8,7 +8,7 @@ num_chunks_flag ="--num-chunk-files"
 help_flag ="--help"
 keep_flag ="--keep-chunks"
 delete_chunks_flag ="--force-delete-chunks"
-
+from alive_progress import alive_bar;
 
 class bcolors:
     HEADER = '\033[95m'
@@ -101,33 +101,39 @@ chunk_size = os.path.getsize(str(1) + file_common_name)
 model_copy = open( file_copy_name,mode="wb" )
 is_chunk_process_successful=True
 
-for i in range(1,num_segments+1):
-    try:
-        
-        chunk = open(str(i) + file_common_name, mode="rb")
-        data = chunk.read(chunk_size)
-        model_copy.write(data)
-    except FileNotFoundError:
-        print(f"""{bold}{fail}Some chunk files may be missing. Can't find file named: {grey}{str(i)+file_common_name}. {fail}Make sure that the value of {grey}--num-chunks{fail} flag is correct. 
-its possible that the file was combined correctly but you should verify using fc.{end_color}""")
-        is_chunk_process_successful=False
-        break
-    finally:
-        chunk.close()
+print("\n")
+with alive_bar(num_segments,bar="blocks",unit=" File",title="Combine",spinner="radioactive") as bar:
+    for i in range(1,num_segments+1):
+        try:
+            
+            chunk = open(str(i) + file_common_name, mode="rb")
+            data = chunk.read(chunk_size)
+            model_copy.write(data)
+            bar()
+        except FileNotFoundError:
+            print(f"""{bold}{fail}Some chunk files may be missing. Can't find file named: {grey}{str(i)+file_common_name}. {fail}Make sure that the value of {grey}--num-chunks{fail} flag is correct. 
+    its possible that the file was combined correctly but you should verify using fc.{end_color}""")
+            is_chunk_process_successful=False
+            break
+        finally:  
+            chunk.close()
         
 model_copy.close()
 
-yes_or_no = "Yes" if keep_flag not in sys.argv else "No"
+are_chunks_deleted= "Yes" if keep_flag not in sys.argv else "No"
 
 if keep_flag not in sys.argv and is_chunk_process_successful:
-    for i in range(1,num_segments+1):
-                os.remove( str(i) + file_common_name)
+    print(f"{green}\nFile Combined !\n{end_color}")
+    with alive_bar(num_segments,bar="blocks",unit=" File",title="Delete",spinner="arrows_in") as bar:
+        for i in range(1,num_segments+1):
+                    os.remove( str(i) + file_common_name)
+                    bar()
 
 if is_chunk_process_successful:
-     print(f"""{green}{bold}  * Combined successfully *{end_color}
+     print(f"""\n{green}{bold}  * Files Combine Successful *{end_color}
         {bold} {grey} File created: {cyan}{file_copy_name} {end_color}
         {bold} {grey} Number of chunks combined : {cyan} {num_segments}{end_color}
-        {bold} {grey} Were chunks deleted?  : {cyan} {yes_or_no}{end_color}
+        {bold} {grey} Were chunks deleted?  : {cyan} {are_chunks_deleted}{end_color}
             {end_color}""")  
 
 
