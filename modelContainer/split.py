@@ -56,7 +56,7 @@ chunk_size_index = sys.argv.index(bytes_flag) + 1
 chunk_size = int( sys.argv[chunk_size_index] )
 
 
-if file_to_split not in os.listdir():
+if not os.path.isfile(file_to_split):
     print(f"{bold}{fail} ERROR: File named: {grey}{file_to_split} {fail}does not exist. {end_color}")
     exit()
 #file_to_split = sys.argv[1]
