@@ -56,7 +56,7 @@ if keep_flag in sys.argv and delete_chunks_flag in sys.argv:
 
 user_cont_or_stop="yes"
 if keep_flag not in sys.argv and delete_chunks_flag not in sys.argv :
-    user_cont_or_stop = input(f"""{bold}{bcolors.WARNING}If you continue, data chunks will combine into a file and the chunks will be {bcolors.FAIL}DELETED !{bcolors.BOLD}{bcolors.OKGREEN} (exit and use flag {bcolors.BOLD}{bcolors.OKCYAN}--keep{bcolors.OKGREEN} to combine and keep the chunks)
+    user_cont_or_stop = input(f"""{bold}{bcolors.WARNING}If you continue, data chunks will combine into a file and the chunks will be {bcolors.FAIL}DELETED !{bcolors.BOLD}{bcolors.OKGREEN} (exit and use flag {bcolors.BOLD}{bcolors.OKCYAN}{keep_flag}{bcolors.OKGREEN} to combine and keep the chunks)
 {bold}{bcolors.WARNING}  do you want to continue?{fail} y/n {bcolors.ENDC}""")
 
 
