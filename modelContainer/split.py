@@ -102,7 +102,7 @@ if chunk_size>=MB_CONVERSION_UNIT :
     chunk_in_MB= chunk_size/MB_CONVERSION_UNIT
 
 
-
+#
 print(f"""{green}{bold} \n  * File Split Successful *
       {grey}    Number of chunks created : {cyan} {file_name_counter-1}
       {grey}    Byte Size per chunk : {cyan} {chunk_in_MB} {unit}  - {chunk_size} Bytes  

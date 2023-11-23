@@ -75,7 +75,7 @@ file_copy_name = sys.argv[file_copy_name_index]
 num_segments_index = sys.argv.index(num_chunks_flag) + 1 
 num_segments = int( sys.argv[num_segments_index] )
 
-
+#
 file_common_name="-temp-chunk.txt"
 
 if "1"+file_common_name not in os.listdir():
