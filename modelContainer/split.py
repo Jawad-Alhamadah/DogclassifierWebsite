@@ -1,6 +1,7 @@
 import sys
 import os
 import math
+import time
 from alive_progress import alive_bar;
 
 #* Colors for CMD messages
@@ -26,13 +27,17 @@ BYTES_FLAG = "--size-bytes"
 KBYTES_FLAG = "--size-kilobytes"
 MBYTES_FLAG = "--size-megabytes"
 GBYTES_FLAG = "--size-gigabytes"
-EXT_FLAG = "--extention"
 HELP_FLAG ="--help"
-OUTPUT_FILENAME_FLAG ="--chunks-filename"
+OUTPUT_FILENAME_FLAG ="--filename-chunks"
+
+#* default chunks name
+chunks_filename="_temp-chunk.txt" 
+
 
 KB_CONVERSION_UNIT=1024
 MB_CONVERSION_UNIT=1024 * 1024
 GB_CONVERSION_UNIT= 1024 * 1024 * 1024
+
 
 script_args = [arg.lower() for arg in sys.argv]
 def get_chunk_size(flag,conversion ):
@@ -63,6 +68,10 @@ if OUTPUT_FILENAME_FLAG in script_args:
     output_filename_index = script_args.index(OUTPUT_FILENAME_FLAG) + 1
     chunks_filename = script_args[output_filename_index]
 
+file_to_split_index = script_args.index(FILENAME_FLAG) + 1 
+filename = script_args[file_to_split_index]
+
+
 
 filename_flag_instruction = f"""{bold}{cyan}Filename to split: {grey}{ FILENAME_FLAG }{end_color}{end_color}"""
 bytes_flag_instructions = f"""{bold}{green}segment size in bytes, KiloBytes, MegaBytes or GigaBytes: {grey}{BYTES_FLAG} {cyan}- {grey}{KBYTES_FLAG} {cyan}- {grey}{MBYTES_FLAG} {cyan}- {grey}{GBYTES_FLAG} {end_color}  """
@@ -90,10 +99,8 @@ NO_SIZE_ERROR = f"{bold}{fail}No size provided. Use {grey}--help {fail}to see av
 
 MULTI_SIZE_ERROR= f"{bold}{fail}You can only have one {grey} --size {fail} flag at once. use {grey}--help{fail} for options{end_color}"
 
-file_name_counter=1
 
-#* default chunks name
-chunks_filename="_temp-chunk.txt" 
+
 
 
 #* error checking
@@ -104,7 +111,6 @@ if HELP_FLAG in script_args:
 if FILENAME_FLAG not in script_args:
     print(NO_FILENAME_FLAG_ERROR)
     sys.exit()
-
     
 #* if size_flags_counter is 0, it means no chunks size was provided
 if size_flags_counter ==0:
@@ -118,35 +124,55 @@ if size_flags_counter >1:
 
 
 
-file_to_split_index = script_args.index(FILENAME_FLAG) + 1 
-filename = script_args[file_to_split_index]
 
 #* check the size of the file to split. Then, calculate the number of resulting chunks
 file_size = os.stat(filename).st_size
 chunks_count = math.ceil(file_size/chunk_byte_size)
 
+# ToDo check if the chunks already exist. If so, delete them first.
+
+KEEP_DELETE_WARNING = f"""{bold}{warning} chunk files named {cyan}{chunks_filename} {warning}already exist. Do you want to overwrite them? y/n {end_color}"""
+
+delete_or_keep_user_input =''
+first_filename ="1"+chunks_filename
+if first_filename in os.listdir():
+     delete_or_keep_user_input = input(KEEP_DELETE_WARNING)
+     is_user_answer_no = delete_or_keep_user_input.lower() !="yes" and delete_or_keep_user_input.lower() !="y"
+     if is_user_answer_no:
+      sys.exit()  
+
+
+#* if answer is no, print an error
 
 #* use has the flag for a different name, change the default name
 
 FILE_NOT_FOUND_ERROR = f"{bold}{fail} ERROR: File named: {grey}{filename} {fail}does not exist. {end_color}"
 if not os.path.isfile(filename):
     print(FILE_NOT_FOUND_ERROR)
-    exit()
+    sys.exit()
 
 #* read the file
 model_file = open(filename,mode="rb")
 
-
-
+is_success = True
+i=1
 with alive_bar(chunks_count,bar="blocks",unit=" File",title="Split") as bar:
-    for i in range(1,chunks_count+1) :
-        data = model_file.read(chunk_byte_size)
-        file_name=str(file_name_counter)+chunks_filename
-        file = open(file_name,mode="wb")
-        file.write(data)
-        file.close()
-        file_name_counter+=1
-        bar()
+    while i<=chunks_count :
+        try:
+            data = model_file.read(chunk_byte_size)
+            file_name=str(i)+chunks_filename
+            file = open(file_name,mode="wb")
+            file.write(data)
+            bar()
+            i=i+1
+            
+        except OSError as e:
+            print(f""" {fail}Failed to create file, retrying{end_color}""")
+            
+        finally:
+            file.close()
+        
+
 
 
 byte_unit = 'B'
@@ -167,12 +193,14 @@ elif chunk_byte_size >= KB_CONVERSION_UNIT :
     byte_unit = "Kb"
 
 
-split_complete_message =f"""{green}{bold} \n  * File Split Successful *
-      {grey}    Number of chunks created : {cyan} {file_name_counter-1}
-      {grey}    Byte Size per chunk : {cyan} {adjusted_chunk_size} {byte_unit}  - {chunk_byte_size} Bytes  
+
+split_complete_message =f"""\n{green}{bold} * File Split Successful *                                                                            
+      {grey}    Number of chunks created : {cyan} {chunks_count}                                        
+      {grey}    Size per chunk : {cyan} {adjusted_chunk_size} {byte_unit}  - {chunk_byte_size} Bytes               
          {end_color}"""
 
-#
+print(f"""\n{green}┌────────────────────────────────────────────────────────────────────────┐{end_color}""")
 print(split_complete_message)  
+print(f"""{green}└────────────────────────────────────────────────────────────────────────┘{end_color}""")
 model_file.close()
 

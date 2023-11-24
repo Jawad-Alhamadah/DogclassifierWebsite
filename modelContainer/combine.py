@@ -33,12 +33,12 @@ def get_flag_value(flag,args):
 filename_flag = "--filename"
 num_chunks_flag = "--num-chunk-files"
 help_flag = "--help"
-keep_flag = "--keep-chunks"
+keep_flag = "--keep"
 delete_chunks_flag = "--force-delete"
 extension_flag = "--ext"
-chunks_filename_flag = "--chunks-filename"
+chunks_filename_flag = "--filename-chunks"
 default_chunk_name = "_temp-chunk.txt"
-chunks_filename = default_chunk_name
+chunks_filename = 'None'
 
 script_args = [arg.lower() for arg in sys.argv]
 
@@ -59,9 +59,6 @@ NUM_CHUNKS_ERROR = f"{bold}{fail}No chunk number provided. Use {grey}{num_chunks
 NO_EXT_ERROR = f"{bold}{fail}No extension included. Use {grey}{extension_flag}{fail} to set the extension. {end_color}"
 KEEP_AND_DELETE_ERROR = f"{grey}{keep_flag}{end_color}{warning} and {grey}{delete_chunks_flag}{warning} are contradictory flags. Remove one of them according to your needs. use {grey} --help {warning} to see options{end_color}"
 
-
-FIRST_FILE_NOT_EXIST = f"""{fail}{bold}ERROR: First chunk file is missing. Its likley that the chunk files don't exit, or inncorrect name provided to {grey}{chunks_filename_flag}{end_color}
-{fail}The default chunks name is {cyan}{default_chunk_name}{fail}. make sure the files exist or provide the correct chunks name {end_color}"""
 
 #* Warnings
 KEEP_DELETE_WARNING = f"""{bold}{warning}If you continue, data chunks will combine into a file and the chunks will be {fail}DELETED !{bold}{green} (exit and use flag {bold}{cyan}{keep_flag}{green} to combine and keep the chunks)
@@ -92,8 +89,11 @@ if is_delete_and_keep:
 combined_filename = get_flag_value( filename_flag, script_args )
 ext = get_flag_value( extension_flag, script_args )
 num_chunks = int( get_flag_value( num_chunks_flag, script_args ) )
+
 if chunks_filename_flag in script_args:
-    chunks_filename = get_flag_value( chunks_filename_flag, script_args ) 
+    chunks_filename = get_flag_value( chunks_filename_flag, script_args )
+else:
+     chunks_filename = default_chunk_name 
 
 copy_ext = combined_filename.split(".")[1]
 
@@ -127,11 +127,18 @@ if is_neither_delete_or_keep :
     delete_or_keep_user_input = input(KEEP_DELETE_WARNING)
 
 #* if use answer is no, exist
-is_user_answer_no = delete_or_keep_user_input.lower() !="yes" and delete_or_keep_user_input !="y"
+is_user_answer_no = delete_or_keep_user_input.lower() !="yes" and delete_or_keep_user_input.lower() !="y"
 if is_user_answer_no:
     sys.exit()
 
 #* if the first file doesn't exist, print an error
+
+
+FIRST_FILE_NOT_EXIST = f"""{fail}{bold}ERROR: First chunk file is missing. Its likley that the chunk files don't exit, or inncorrect name provided to {grey}{chunks_filename_flag}{end_color}
+
+ {warning}Default chunk name:  {cyan}{default_chunk_name} 
+ 
+ {fail}make sure the chunks have the default name or provide the correct common name with {grey}{chunks_filename_flag} {end_color}"""
 first_filename ="1"+chunks_filename
 if first_filename not in os.listdir():
      print(FIRST_FILE_NOT_EXIST)
@@ -154,7 +161,7 @@ if chunk_files_count > num_chunks:
     delete_or_keep_user_input = input(CHUNK_COUNT_MISMATCH)
 
 #* if answer is no, print an error
-is_user_answer_no = delete_or_keep_user_input.lower() !="yes" and delete_or_keep_user_input !="y"
+is_user_answer_no = delete_or_keep_user_input.lower() !="yes" and delete_or_keep_user_input.lower() !="y"
 if is_user_answer_no:
     sys.exit()
 
@@ -212,11 +219,16 @@ if keep_flag not in script_args and is_chunk_process_successful:
                     os.remove( str(i) + chunks_filename)
                     bar()
 
+
+
+
 if is_chunk_process_successful:
-     print(f"""\n{green}{bold}  * Files Combine Successful *{end_color}
+     print(f"""\n{green}┌────────────────────────────────────────────────────────────────────────┐{end_color}""")
+     print(f"""\n{green}{bold}  * File Merge Successful *{end_color}
         {bold} {grey} File created: {cyan}{combined_filename} {end_color}
         {bold} {grey} Number of chunks combined : {cyan} {num_chunks} Files{end_color}
         {bold} {grey} Were chunks deleted?  : {cyan} {are_chunks_deleted}{end_color}
         {bold} {grey} Byte Size per chunk : {cyan} {adjusted_chunk_size} {byte_unit}  - {chunk_size} Bytes  
             {end_color}""")  
+     print(f"""{green}└────────────────────────────────────────────────────────────────────────┘{end_color}""")
 
