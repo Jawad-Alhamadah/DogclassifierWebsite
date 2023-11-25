@@ -3,9 +3,6 @@ import os
 import sys
 from alive_progress import alive_bar;
 
-
-
-
 KB_CONVERSION_UNIT = 1024
 MB_CONVERSION_UNIT = 1024 * 1024
 GB_CONVERSION_UNIT = 1024 * 1024 * 1024
@@ -28,13 +25,31 @@ def get_flag_value(flag,args):
      flag_value = args [flag_index]
      return flag_value
 
+def byte_to_Kilo_mega_giga(bytes):
+    if bytes>=GB_CONVERSION_UNIT :
+        return {'bytes':bytes/GB_CONVERSION_UNIT , "unit":"Gb"}
+        
+    if bytes>=MB_CONVERSION_UNIT :
+        return {'bytes':bytes/MB_CONVERSION_UNIT , "unit":"Mb"}
 
+    if bytes>=KB_CONVERSION_UNIT :
+        return {'bytes':bytes/KB_CONVERSION_UNIT , "unit":"Kb"}
+    
+    return {'bytes':bytes , "unit":"Bytes"}
+
+def check_flag_error(flag, error_message,args):
+    #* some errors are thrown when the flag doesn't exist.
+          if flag not in args:
+            print(error_message)
+            sys.exit()
+     
 #*flags
+#4
 filename_flag = "--filename"
-num_chunks_flag = "--num-chunk-files"
+num_chunks_flag = "--num-files"
 help_flag = "--help"
-keep_flag = "--keep"
-delete_chunks_flag = "--force-delete"
+#keep_flag = "--keep"
+force_delete_flag = "--force-delete"
 extension_flag = "--ext"
 chunks_filename_flag = "--filename-chunks"
 default_chunk_name = "_temp-chunk.txt"
@@ -48,48 +63,47 @@ filename_instruction = f"""{bold}{cyan}chunk combination Filename:  {grey}{ file
 num_chunks_instruction =f"""{bold}{warning}Number of chunks:  {grey}{ num_chunks_flag }{end_color}"""
 ext_instruction = f"""{bold}{green}File extension : {grey} {extension_flag} {end_color}"""
 help_instruction =f"""{bold}{pink}-optional- {bold}{warning}intructions for script:  {grey}{help_flag}{end_color}"""
-keep_instruction =f"""{bold}{pink}-optional- {bold}{warning}combine all chunks and keep the original chunks: {grey}{keep_flag}{end_color}"""
-no_chunks_instruction =f"""{bold}{pink}-optional- {bold}{warning}Remove Chunks without asking: {grey}{delete_chunks_flag}{end_color}"""
+keep_instruction =f"""{bold}{pink}-optional- {bold}{warning} keep or delete the original chunks after merging: {grey}{force_delete_flag}{end_color}"""
+#no_chunks_instruction =f"""{bold}{pink}-optional- {bold}{warning}Remove Chunks without asking: {grey}{delete_chunks_flag}{end_color}"""
 example_instruction = f"""{bold}{highlight_grey}example:{end_color} {end_color}{warning}python {end_color} combine.py {grey}{filename_flag}{end_color} {cyan}myCopy.pt {warning} {grey}{num_chunks_flag}{end_color} {green}11{end_color} """
 
 #* Error messages
 
 NO_FILENAME_FLAG_ERROR = f"{bold}{fail}No file name provided. Use {grey}{filename_flag}{fail} to name your result file. {end_color}"
-NUM_CHUNKS_ERROR = f"{bold}{fail}No chunk number provided. Use {grey}{num_chunks_flag}{fail} to indicate the number of chunks to sum. {end_color}"
+NO_NUM_CHUNKS_ERROR = f"{bold}{fail}No chunk number provided. Use {grey}{num_chunks_flag}{fail} to indicate the number of chunks to sum. {end_color}"
 NO_EXT_ERROR = f"{bold}{fail}No extension included. Use {grey}{extension_flag}{fail} to set the extension. {end_color}"
-KEEP_AND_DELETE_ERROR = f"{grey}{keep_flag}{end_color}{warning} and {grey}{delete_chunks_flag}{warning} are contradictory flags. Remove one of them according to your needs. use {grey} --help {warning} to see options{end_color}"
+#KEEP_AND_DELETE_ERROR = f"{grey}{keep_flag}{end_color}{warning} and {grey}{delete_chunks_flag}{warning} are contradictory flags. Remove one of them according to your needs. use {grey} --help {warning} to see options{end_color}"
 
 
 #* Warnings
-KEEP_DELETE_WARNING = f"""{bold}{warning}If you continue, data chunks will combine into a file and the chunks will be {fail}DELETED !{bold}{green} (exit and use flag {bold}{cyan}{keep_flag}{green} to combine and keep the chunks)
+KEEP_DELETE_WARNING = f"""{bold}{warning}data chunks will combine into a file and the chunks will be {fail}DELETED !{bold}{green} (exit and use flag {bold}{cyan}{force_delete_flag} {end_color}no{green} to combine and keep the chunks)
 {bold}{warning}  do you want to continue?{fail} y/n {end_color}"""
+HELP_INSTRUCTIONS =f""" \n{intro}\n
+                1. {filename_instruction}
+                2. {num_chunks_instruction}
+                3. {ext_instruction}
+                4. {help_instruction}
+                5. {keep_instruction}
+    \n{example_instruction}
+          {end_color}"""
 
-
+if "-help" in script_args or help_flag in script_args :
+    print(HELP_INSTRUCTIONS)
+    sys.exit()
 
 #* error checking
-if filename_flag not in script_args:
-    print(NO_FILENAME_FLAG_ERROR)
-    sys.exit()
+check_flag_error(filename_flag, NO_FILENAME_FLAG_ERROR , script_args)
+check_flag_error(num_chunks_flag, NO_NUM_CHUNKS_ERROR , script_args)
+check_flag_error(extension_flag, NO_EXT_ERROR , script_args)
 
-if num_chunks_flag not in script_args:
-    print(NUM_CHUNKS_ERROR)
-    sys.exit()
-
-if extension_flag not in script_args:
-    print(NO_EXT_ERROR)
-    sys.exit()
-
-#* error if contradiction flag keep and delete are both raised
-is_delete_and_keep = keep_flag in script_args and delete_chunks_flag in script_args
-
-if is_delete_and_keep:
-    print(KEEP_AND_DELETE_ERROR)
-    sys.exit()
-
+#*get values
 combined_filename = get_flag_value( filename_flag, script_args )
 ext = get_flag_value( extension_flag, script_args )
 num_chunks = int( get_flag_value( num_chunks_flag, script_args ) )
 
+
+
+#* special considerations for getting values
 if chunks_filename_flag in script_args:
     chunks_filename = get_flag_value( chunks_filename_flag, script_args )
 else:
@@ -98,6 +112,19 @@ else:
 copy_ext = combined_filename.split(".")[1]
 
 
+#* if --force-delete flag isn't raised, throw a warning
+user_input_continue="yes"
+delete_chunks = 'no'
+
+if force_delete_flag not in script_args :
+    user_input_continue = input(KEEP_DELETE_WARNING)
+    is_user_answer_no = user_input_continue.lower() !="yes" and user_input_continue.lower() !="y"
+    delete_chunks='yes'
+    if is_user_answer_no:
+        sys.exit()
+else:
+     delete_chunks = get_flag_value(force_delete_flag,script_args)
+     
 EXTENSION_MISMATCH_ERROR = f"""{bold}{fail}\nThe copy name extenstion in filename: {cyan}{combined_filename} {fail}doesn't match flag extention {grey}{extension_flag} {cyan}{ext}{end_color} 
 {fail}{bold}Both must match to insure you combine the file into the correct extension. \n {end_color}"""
 if ext != copy_ext:
@@ -105,82 +132,49 @@ if ext != copy_ext:
      sys.exit()
 
 
-#* flag values.
-if "-help" in script_args or help_flag in script_args :
-    print( f""" \n{intro}\n
-                1. {filename_instruction}
-                2. {num_chunks_instruction}
-                3. {ext_instruction}
-                4. {help_instruction}
-                5. {keep_instruction}
-                6. {no_chunks_instruction}
-    \n{example_instruction}
-          {end_color}""")
-    sys.exit()
-
-
-delete_or_keep_user_input="yes"
-
-#* if neither keep or delete is raised, print a warning.
-is_neither_delete_or_keep = keep_flag not in script_args and delete_chunks_flag not in script_args
-if is_neither_delete_or_keep :
-    delete_or_keep_user_input = input(KEEP_DELETE_WARNING)
-
-#* if use answer is no, exist
-is_user_answer_no = delete_or_keep_user_input.lower() !="yes" and delete_or_keep_user_input.lower() !="y"
-if is_user_answer_no:
-    sys.exit()
-
-#* if the first file doesn't exist, print an error
-
-
 FIRST_FILE_NOT_EXIST = f"""{fail}{bold}ERROR: First chunk file is missing. Its likley that the chunk files don't exit, or inncorrect name provided to {grey}{chunks_filename_flag}{end_color}
 
  {warning}Default chunk name:  {cyan}{default_chunk_name} 
  
  {fail}make sure the chunks have the default name or provide the correct common name with {grey}{chunks_filename_flag} {end_color}"""
+
+current_folder_files= os.listdir()
+
 first_filename ="1"+chunks_filename
-if first_filename not in os.listdir():
+if first_filename not in current_folder_files:
      print(FIRST_FILE_NOT_EXIST)
      sys.exit()
 
-
-
 #* count the number of chunks to combine
 chunk_files_count=0
-list_dir= os.listdir()
-for i in range( len(list_dir) ):
-     if chunks_filename in list_dir[i]:
+for file in current_folder_files:
+     if chunks_filename in file:
           chunk_files_count+=1
 
 #* check the count provided against the count detected in the actual file.
-CHUNK_COUNT_MISMATCH = f"""{bold}{grey}\nText files with the token name :  {end_color}{chunks_filename} {grey}are higher in number {cyan}({chunk_files_count
-} counted) {grey}than the inputted number of chunk files: {cyan}{num_chunks}{grey} This will likely lead to some chunks being combined without reproducing the original file.
-\n{warning}do you want to continue regardless? {fail}y/n {green}(correcting the number is highly recommended){end_color}"""
-if chunk_files_count > num_chunks:
-    delete_or_keep_user_input = input(CHUNK_COUNT_MISMATCH)
+CHUNK_COUNT_MISMATCH = f"""{bold}{grey}\nText files with the token name :  {end_color}{chunks_filename} {grey} Don't match provided number{end_color} 
 
-#* if answer is no, print an error
-is_user_answer_no = delete_or_keep_user_input.lower() !="yes" and delete_or_keep_user_input.lower() !="y"
-if is_user_answer_no:
-    sys.exit()
+{chunks_filename} {grey}token files counted : {cyan}{chunk_files_count}
+
+{grey}number of files to combine provided by {num_chunks_flag}: {cyan}{num_chunks}{grey}
+
+The Program will either partially combine the files or will go over the available chunks and cause an error.
+\n{warning}do you want to continue regardless? {fail}y/n {green}(correcting the number is highly recommended){end_color}"""
+if chunk_files_count != num_chunks:
+    continue_user_input = input(CHUNK_COUNT_MISMATCH)
+    is_user_answer_no = continue_user_input.lower() !="yes" and continue_user_input.lower() !="y"
+    if is_user_answer_no:
+        sys.exit()
+
 
 #* get chunks size
 chunk_size = os.path.getsize(str(1) + chunks_filename)
-byte_unit = "B"
 
 #* determine the unit for the byte size
-if chunk_size>=GB_CONVERSION_UNIT :
-    adjusted_chunk_size= chunk_size/GB_CONVERSION_UNIT
-    byte_unit= "Gb"
 
-elif chunk_size>=MB_CONVERSION_UNIT :
-    adjusted_chunk_size= chunk_size/MB_CONVERSION_UNIT
-    byte_unit="Mb"
-
-elif chunk_size>=KB_CONVERSION_UNIT :
-    adjusted_chunk_size= chunk_size/KB_CONVERSION_UNIT
-    byte_unit="Kb"
+byte_and_unit = byte_to_Kilo_mega_giga(chunk_size)
+adjusted_chunk_size = byte_and_unit["bytes"]
+byte_unit = byte_and_unit["unit"]
 
 
 #* open file to write
@@ -210,9 +204,8 @@ with alive_bar(num_chunks,bar="blocks",unit=" File",title="Combine",spinner="rad
         
 model_copy.close()
 
-are_chunks_deleted= "Yes" if keep_flag not in script_args else "No"
-
-if keep_flag not in script_args and is_chunk_process_successful:
+is_keep_chunks = delete_chunks.lower() =="yes" or delete_chunks.lower() =="y"
+if is_keep_chunks!=False and is_chunk_process_successful:
     print(f"{green}\nFile Combined !\n{end_color}")
     with alive_bar(num_chunks,bar="blocks",unit=" File",title="Delete",spinner="arrows_in") as bar:
         for i in range(1,num_chunks+1):
@@ -220,15 +213,24 @@ if keep_flag not in script_args and is_chunk_process_successful:
                     bar()
 
 
+new_file_size = os.path.getsize(combined_filename)
 
+unit = "B"
+
+#* determine the unit for the byte size
+
+byte_and_unit = byte_to_Kilo_mega_giga(new_file_size)
+new_file_size = byte_and_unit["bytes"]
+unit = byte_and_unit["unit"]
 
 if is_chunk_process_successful:
      print(f"""\n{green}┌────────────────────────────────────────────────────────────────────────┐{end_color}""")
      print(f"""\n{green}{bold}  * File Merge Successful *{end_color}
         {bold} {grey} File created: {cyan}{combined_filename} {end_color}
         {bold} {grey} Number of chunks combined : {cyan} {num_chunks} Files{end_color}
-        {bold} {grey} Were chunks deleted?  : {cyan} {are_chunks_deleted}{end_color}
-        {bold} {grey} Byte Size per chunk : {cyan} {adjusted_chunk_size} {byte_unit}  - {chunk_size} Bytes  
+        {bold} {grey} Were chunks deleted?  : {cyan} {is_keep_chunks}{end_color}
+        {bold} {grey} Byte Size per chunk : {cyan} {adjusted_chunk_size} {byte_unit}  - {chunk_size} Bytes
+        {bold} {grey} Merged File Size : {cyan} {round(new_file_size,2)} {unit}
             {end_color}""")  
      print(f"""{green}└────────────────────────────────────────────────────────────────────────┘{end_color}""")
 

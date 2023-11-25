@@ -74,6 +74,13 @@ async def updateWiki ():
     links =  soup.select("#mw-content-text > .mw-parser-output > div > ul > li > a")
     return
 
+@app.get("/test")
+async def testReturn ():
+  
+
+    print("tst")
+    return "hoho test"
+
 
 @app.post("/",response_class=JSONResponse , response_model=WikiPage)
 async def home(canvasImage: UploadFile = File(...)):

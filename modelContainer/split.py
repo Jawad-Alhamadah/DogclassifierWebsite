@@ -17,6 +17,18 @@ end_color='\033[0m'
 highlight_grey ='\033[100m'
 
 
+def byte_to_Kilo_mega_giga(bytes):
+    if bytes>=GB_CONVERSION_UNIT :
+        return {'bytes':bytes/GB_CONVERSION_UNIT , "unit":"Gb"}
+        
+    if bytes>=MB_CONVERSION_UNIT :
+        return {'bytes':bytes/MB_CONVERSION_UNIT , "unit":"Mb"}
+
+    if bytes>=KB_CONVERSION_UNIT :
+        return {'bytes':bytes/KB_CONVERSION_UNIT , "unit":"Kb"}
+    
+    return {'bytes':bytes , "unit":"Bytes"}
+
 
 #* one of these flags must exist. But only 1. if the size is bigger than 1, we throw an error
 size_flags_counter=0
@@ -40,15 +52,40 @@ GB_CONVERSION_UNIT= 1024 * 1024 * 1024
 
 
 script_args = [arg.lower() for arg in sys.argv]
+
 def get_chunk_size(flag,conversion ):
     chunk_size_index = script_args.index(flag) + 1 
     chunk_byte_size = int( script_args[chunk_size_index] )
     return chunk_byte_size * conversion
 
+filename_flag_instruction = f"""{bold}{cyan}Filename to split: {grey}{ FILENAME_FLAG }{end_color}{end_color}"""
+bytes_flag_instructions = f"""{bold}{green}segment size in bytes, KiloBytes, MegaBytes or GigaBytes: {grey}{BYTES_FLAG} {cyan}- {grey}{KBYTES_FLAG} {cyan}- {grey}{MBYTES_FLAG} {cyan}- {grey}{GBYTES_FLAG} {end_color}  """
+help_flag_instructions = f"""{bold}{pink}-optional- {bold}{warning}intructions for script:  {grey}{HELP_FLAG}{end_color}"""
+example_instruction = f""" {bold}{highlight_grey}example:{end_color} {warning}python {end_color}split.py {grey}{FILENAME_FLAG} {cyan}fileToSplit.pt {grey}{BYTES_FLAG} {green}50000000 """
+output_filename_instruction = f"""{bold}{pink}-optional- {warning} choose a name for output chunk files: {grey}{OUTPUT_FILENAME_FLAG}{end_color} """
+
+#* text to display for when the help flag is raised
+HELP_INSTRUCTIONS =f"""\n{end_color}{underline}{bold}{pink}Enter the Following values with their respective Flags:\n {end_color}
+                1. {filename_flag_instruction}
+                2. {bytes_flag_instructions}
+                3. {output_filename_instruction}
+                4. {help_flag_instructions}
+                
+                          
+{example_instruction}
+          {end_color}"""
+if HELP_FLAG in script_args:
+    print(HELP_INSTRUCTIONS)
+    sys.exit()
+
+#* all flags need a value. This checks if the script args are even. If not, throw an error
+#*
+flags_count = sum("--" in arg for arg in script_args)
+if (len(script_args)-1) -flags_count != flags_count:
+    print(f"{fail} Some flags don't have a value. {end_color}")
+    sys.exit()
 
 if BYTES_FLAG in script_args:
-    # bytes_chosen_flag = BYTES_FLAG
-    # chunk_size_index = script_args.index(BYTES_FLAG) + 1 
     chunk_byte_size = get_chunk_size(BYTES_FLAG,1)
     size_flags_counter+=1
 
@@ -72,25 +109,6 @@ file_to_split_index = script_args.index(FILENAME_FLAG) + 1
 filename = script_args[file_to_split_index]
 
 
-
-filename_flag_instruction = f"""{bold}{cyan}Filename to split: {grey}{ FILENAME_FLAG }{end_color}{end_color}"""
-bytes_flag_instructions = f"""{bold}{green}segment size in bytes, KiloBytes, MegaBytes or GigaBytes: {grey}{BYTES_FLAG} {cyan}- {grey}{KBYTES_FLAG} {cyan}- {grey}{MBYTES_FLAG} {cyan}- {grey}{GBYTES_FLAG} {end_color}  """
-help_flag_instructions = f"""{bold}{pink}-optional- {bold}{warning}intructions for script:  {grey}{HELP_FLAG}{end_color}"""
-example_instruction = f""" {bold}{highlight_grey}example:{end_color} {warning}python {end_color}split.py {grey}{FILENAME_FLAG} {cyan}fileToSplit.pt {grey}{BYTES_FLAG} {green}50000000 """
-output_filename_instruction = f"""{bold}{pink}-optional- {warning} choose a name for output chunk files: {grey}{OUTPUT_FILENAME_FLAG}{end_color} """
-
-#* text to display for when the help flag is raised
-HELP_INSTRUCTIONS =f"""\n{end_color}{underline}{bold}{pink}Enter the Following values with their respective Flags:\n {end_color}
-                1. {filename_flag_instruction}
-                2. {bytes_flag_instructions}
-                3. {output_filename_instruction}
-                4. {help_flag_instructions}
-                
-                          
-{example_instruction}
-          {end_color}"""
-
-
 #* display text when the file is not found
 
 NO_FILENAME_FLAG_ERROR = f"{bold}{fail}No file name provided. Use {grey}{FILENAME_FLAG}{fail} to pick the file to split {end_color}"
@@ -100,14 +118,7 @@ NO_SIZE_ERROR = f"{bold}{fail}No size provided. Use {grey}--help {fail}to see av
 MULTI_SIZE_ERROR= f"{bold}{fail}You can only have one {grey} --size {fail} flag at once. use {grey}--help{fail} for options{end_color}"
 
 
-
-
-
 #* error checking
-if HELP_FLAG in script_args:
-    print(HELP_INSTRUCTIONS)
-    sys.exit()
-
 if FILENAME_FLAG not in script_args:
     print(NO_FILENAME_FLAG_ERROR)
     sys.exit()
@@ -121,7 +132,11 @@ if size_flags_counter >1:
     print(MULTI_SIZE_ERROR)
     sys.exit()
 
-
+#* use has the flag for a different name, change the default name
+FILE_NOT_FOUND_ERROR = f"{bold}{fail} ERROR: File named: {grey}{filename} {fail}does not exist. {end_color}"
+if not os.path.isfile(filename):
+    print(FILE_NOT_FOUND_ERROR)
+    sys.exit()
 
 
 
@@ -143,13 +158,6 @@ if first_filename in os.listdir():
 
 
 #* if answer is no, print an error
-
-#* use has the flag for a different name, change the default name
-
-FILE_NOT_FOUND_ERROR = f"{bold}{fail} ERROR: File named: {grey}{filename} {fail}does not exist. {end_color}"
-if not os.path.isfile(filename):
-    print(FILE_NOT_FOUND_ERROR)
-    sys.exit()
 
 #* read the file
 model_file = open(filename,mode="rb")
@@ -173,25 +181,13 @@ with alive_bar(chunks_count,bar="blocks",unit=" File",title="Split") as bar:
             file.close()
         
 
-
-
-byte_unit = 'B'
 adjusted_chunk_size = chunk_byte_size
 
 
 #* convert to bytes to kb,mb,gb
-if chunk_byte_size >= GB_CONVERSION_UNIT :
-    adjusted_chunk_size = chunk_byte_size/GB_CONVERSION_UNIT
-    byte_unit = "Gb"
-
-elif chunk_byte_size >= MB_CONVERSION_UNIT :
-    adjusted_chunk_size = chunk_byte_size/MB_CONVERSION_UNIT
-    byte_unit = "Mb"
-
-elif chunk_byte_size >= KB_CONVERSION_UNIT :
-    adjusted_chunk_size = chunk_byte_size/KB_CONVERSION_UNIT
-    byte_unit = "Kb"
-
+byte_and_unit = byte_to_Kilo_mega_giga(adjusted_chunk_size)
+adjusted_chunk_size = byte_and_unit["bytes"]
+byte_unit = byte_and_unit["unit"]
 
 
 split_complete_message =f"""\n{green}{bold} * File Split Successful *                                                                            
