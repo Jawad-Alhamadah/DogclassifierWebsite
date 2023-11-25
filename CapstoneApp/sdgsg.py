@@ -23,8 +23,7 @@ from torchvision.models import  VGG16_Weights
 #toDO Download the Path vgg16. Then copy it into the correct place. 
 #Todo, hopefully, that would stop the long download time from the server every time.
 #
-
-device =torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device =torch.device('cpu')#torch.device('cuda' if torch.cuda.is_available() else 'cpu') ##('cuda' if torch.cuda.is_available() else 'cpu')
 def scrap(url):
     page = requests.get(url) #url
     src = page.content
@@ -58,7 +57,7 @@ app.add_middleware(
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["POST", "GET"],
-		allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+                allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
     max_age=3600
 )
 
@@ -146,7 +145,7 @@ async def home(canvasImage: UploadFile = File(...)):
 face_cascade = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_alt.xml')
 
 image_dim= 224
-use_cuda = torch.cuda.is_available()
+use_cuda = False#torch.cuda.is_available()
 
 
 transform={}
@@ -263,10 +262,6 @@ model_transfer.classifier[6]=nn.Linear(model_transfer.classifier[6].in_features,
 if use_cuda:
    model_transfer = model_transfer.cuda()
     
-
-
-
-
 model_transfer.load_state_dict(torch.load('model_transfer.pt',map_location=device))
 criterion_transfer = nn.CrossEntropyLoss()
 optimizer_transfer = optim.Adam(model_transfer.parameters(),lr=0.0001) 
@@ -312,4 +307,3 @@ def run_app(img_path):
    
 
     return ("neither","neither")
-
