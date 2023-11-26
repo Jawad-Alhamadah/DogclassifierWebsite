@@ -45,7 +45,7 @@ def check_flag_error(flag, error_message,args):
      
 #*flags
 #4
-filename_flag = "--filename"
+merged_filename_flag = "--filename"
 num_chunks_flag = "--num-files"
 help_flag = "--help"
 #keep_flag = "--keep"
@@ -59,17 +59,18 @@ script_args = [arg.lower() for arg in sys.argv]
 
 #* Help instructions.
 intro = f"""{bold}{pink}{underline}Enter the Following values with their respective Flags:{end_color}"""
-filename_instruction = f"""{bold}{cyan}chunk combination Filename:  {grey}{ filename_flag }{end_color}"""
+merged_filename_instruction = f"""{bold}{cyan}Merged Filename:  {grey}{ merged_filename_flag }{end_color}"""
 num_chunks_instruction =f"""{bold}{warning}Number of chunks:  {grey}{ num_chunks_flag }{end_color}"""
 ext_instruction = f"""{bold}{green}File extension : {grey} {extension_flag} {end_color}"""
+filename_chunk_instruction =f"""{bold}{pink}-optional- {green}Token file name of Chunks: {grey} {chunks_filename_flag} {end_color}"""
 help_instruction =f"""{bold}{pink}-optional- {bold}{warning}intructions for script:  {grey}{help_flag}{end_color}"""
 keep_instruction =f"""{bold}{pink}-optional- {bold}{warning} keep or delete the original chunks after merging: {grey}{force_delete_flag}{end_color}"""
 #no_chunks_instruction =f"""{bold}{pink}-optional- {bold}{warning}Remove Chunks without asking: {grey}{delete_chunks_flag}{end_color}"""
-example_instruction = f"""{bold}{highlight_grey}example:{end_color} {end_color}{warning}python {end_color} combine.py {grey}{filename_flag}{end_color} {cyan}myCopy.pt {warning} {grey}{num_chunks_flag}{end_color} {green}11{end_color} """
+example_instruction = f"""{bold}{highlight_grey}example:{end_color} {end_color}{warning}python {end_color} combine.py {grey}{merged_filename_flag}{end_color} {cyan}myCopy.pt {warning} {grey}{num_chunks_flag}{end_color} {green}11{end_color} """
 
 #* Error messages
 
-NO_FILENAME_FLAG_ERROR = f"{bold}{fail}No file name provided. Use {grey}{filename_flag}{fail} to name your result file. {end_color}"
+NO_FILENAME_FLAG_ERROR = f"{bold}{fail}No file name provided. Use {grey}{merged_filename_flag}{fail} to name your result file. {end_color}"
 NO_NUM_CHUNKS_ERROR = f"{bold}{fail}No chunk number provided. Use {grey}{num_chunks_flag}{fail} to indicate the number of chunks to sum. {end_color}"
 NO_EXT_ERROR = f"{bold}{fail}No extension included. Use {grey}{extension_flag}{fail} to set the extension. {end_color}"
 #KEEP_AND_DELETE_ERROR = f"{grey}{keep_flag}{end_color}{warning} and {grey}{delete_chunks_flag}{warning} are contradictory flags. Remove one of them according to your needs. use {grey} --help {warning} to see options{end_color}"
@@ -79,11 +80,14 @@ NO_EXT_ERROR = f"{bold}{fail}No extension included. Use {grey}{extension_flag}{f
 KEEP_DELETE_WARNING = f"""{bold}{warning}data chunks will combine into a file and the chunks will be {fail}DELETED !{bold}{green} (exit and use flag {bold}{cyan}{force_delete_flag} {end_color}no{green} to combine and keep the chunks)
 {bold}{warning}  do you want to continue?{fail} y/n {end_color}"""
 HELP_INSTRUCTIONS =f""" \n{intro}\n
-                1. {filename_instruction}
+                1. {merged_filename_instruction}
                 2. {num_chunks_instruction}
                 3. {ext_instruction}
-                4. {help_instruction}
-                5. {keep_instruction}
+                4. {filename_chunk_instruction}
+                5. {help_instruction}
+                6. {keep_instruction}
+                7. {warning}{bold}Default token chunk name: {cyan}{default_chunk_name}{end_color}
+                
     \n{example_instruction}
           {end_color}"""
 
@@ -92,12 +96,12 @@ if "-help" in script_args or help_flag in script_args :
     sys.exit()
 
 #* error checking
-check_flag_error(filename_flag, NO_FILENAME_FLAG_ERROR , script_args)
+check_flag_error(merged_filename_flag, NO_FILENAME_FLAG_ERROR , script_args)
 check_flag_error(num_chunks_flag, NO_NUM_CHUNKS_ERROR , script_args)
 check_flag_error(extension_flag, NO_EXT_ERROR , script_args)
 
 #*get values
-combined_filename = get_flag_value( filename_flag, script_args )
+merged_filename = get_flag_value( merged_filename_flag, script_args )
 ext = get_flag_value( extension_flag, script_args )
 num_chunks = int( get_flag_value( num_chunks_flag, script_args ) )
 
@@ -109,7 +113,7 @@ if chunks_filename_flag in script_args:
 else:
      chunks_filename = default_chunk_name 
 
-copy_ext = combined_filename.split(".")[1]
+copy_ext = merged_filename.split(".")[1]
 
 
 #* if --force-delete flag isn't raised, throw a warning
@@ -125,7 +129,7 @@ if force_delete_flag not in script_args :
 else:
      delete_chunks = get_flag_value(force_delete_flag,script_args)
      
-EXTENSION_MISMATCH_ERROR = f"""{bold}{fail}\nThe copy name extenstion in filename: {cyan}{combined_filename} {fail}doesn't match flag extention {grey}{extension_flag} {cyan}{ext}{end_color} 
+EXTENSION_MISMATCH_ERROR = f"""{bold}{fail}\nThe copy name extenstion in filename: {cyan}{merged_filename} {fail}doesn't match flag extention {grey}{extension_flag} {cyan}{ext}{end_color} 
 {fail}{bold}Both must match to insure you combine the file into the correct extension. \n {end_color}"""
 if ext != copy_ext:
      print(EXTENSION_MISMATCH_ERROR)
@@ -178,7 +182,7 @@ byte_unit = byte_and_unit["unit"]
 
 
 #* open file to write
-model_copy = open( combined_filename,mode="wb" )
+model_copy = open( merged_filename,mode="wb" )
 is_chunk_process_successful=True
 
 print("\n")
@@ -213,7 +217,7 @@ if is_keep_chunks!=False and is_chunk_process_successful:
                     bar()
 
 
-new_file_size = os.path.getsize(combined_filename)
+new_file_size = os.path.getsize(merged_filename)
 
 unit = "B"
 
@@ -226,7 +230,7 @@ unit = byte_and_unit["unit"]
 if is_chunk_process_successful:
      print(f"""\n{green}┌────────────────────────────────────────────────────────────────────────┐{end_color}""")
      print(f"""\n{green}{bold}  * File Merge Successful *{end_color}
-        {bold} {grey} File created: {cyan}{combined_filename} {end_color}
+        {bold} {grey} File created: {cyan}{merged_filename} {end_color}
         {bold} {grey} Number of chunks combined : {cyan} {num_chunks} Files{end_color}
         {bold} {grey} Were chunks deleted?  : {cyan} {is_keep_chunks}{end_color}
         {bold} {grey} Byte Size per chunk : {cyan} {adjusted_chunk_size} {byte_unit}  - {chunk_size} Bytes

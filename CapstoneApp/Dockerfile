@@ -10,11 +10,11 @@ COPY . .
 
 #COPY ./vgg16/vgg16-397923af.pth /root/.cache/torch/hub/checkpoints/vgg16-397923af.pth
 
-EXPOSE 1000
+EXPOSE 8000
 
 #Todo  This works now. Time to create the Docker File for the react App
 
-CMD ["python", "-m", "uvicorn", "server:app", "--proxy-headers","--host" ,"0.0.0.0","--port","1000"]
+CMD ["python", "-m", "uvicorn", "server:app", "--proxy-headers","--host" ,"0.0.0.0"]
 
 # RUN apk add build-base cmake git gtk+2.0-dev pkgconfig ffmpeg-dev
 
