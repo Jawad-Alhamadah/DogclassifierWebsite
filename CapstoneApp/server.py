@@ -45,7 +45,6 @@ origins = ["*"]
 soup = scrap(url ="https://en.wikipedia.org/wiki/List_of_dog_breeds")
 links =  soup.select("#mw-content-text > .mw-parser-output > div > ul > li > a")
 
-
 #the response object
 class WikiPage (BaseModel):
     breed :str
@@ -55,13 +54,13 @@ class WikiPage (BaseModel):
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+   allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["POST", "GET"],
-		allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+    allow_methods=["*"],
+    allow_headers=["*"],
     max_age=3600
 )
-
+ 
 #this function scraps a url and returns the Soup object that we can query for elements
 
 
