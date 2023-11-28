@@ -9,7 +9,7 @@ import useWindowDimensions from "../../CustomHooks/windowDimensions";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
-//import deviceConfig from "../../../deviceConfig"
+import deviceConfig from "../../../deviceConfig"
 //import $ from"jquery"
 //const OSMQuery = require("../../../OSMQuerries/OSMQuerries")
 
@@ -23,6 +23,33 @@ const CropBar = forwardRef(function (props, ref) {
   //let [cropClasses, setCropClasses] = useState()
   //let isMobileDevice = window.innerWidth <= deviceConfig.minWidthBigDevice
   let cropBarClasses = "row justify-content-center pt-3  p-0 g-0";
+
+  let minWidthBigDevice = deviceConfig.minWidthBigDevice+200
+  var isMobileDevice = window.innerWidth <= minWidthBigDevice
+
+  let buttonClass_outline ="warning"
+  let buttonClass_full = "warning"
+  let [buttonColorClass, setButtonColorClass] = useState(
+    isMobileDevice ? buttonClass_full : buttonClass_outline)
+
+
+
+    function resizeHandler() {
+
+      let isMobile = window.innerWidth <= minWidthBigDevice
+      if (isMobile) {
+        setButtonColorClass(buttonClass_outline)
+  
+      }
+  
+      let isLargeDevice = window.innerWidth > minWidthBigDevice
+      if (isLargeDevice) {
+        setButtonColorClass(buttonClass_full)
+      }
+    }
+    window.addEventListener('resize', resizeHandler);
+
+
 
   async function crop(event) {
     setIsCropLoading(true)
@@ -229,7 +256,7 @@ const CropBar = forwardRef(function (props, ref) {
         <Button
           onClick={crop}
           className="col-12 "
-          variant="outline-warning"
+          variant={buttonClass_full}
           style={{ maxWidth: "15rem" }}
         >
           {cropButtonTextSpan}
