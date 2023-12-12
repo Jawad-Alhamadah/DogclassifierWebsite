@@ -20,6 +20,8 @@ import datetime
 from unidecode import unidecode
 import os
 from torchvision.models import  VGG16_Weights
+
+
 #toDO Download the Path vgg16. Then copy it into the correct place. 
 #Todo, hopefully, that would stop the long download time from the server every time.
 #
