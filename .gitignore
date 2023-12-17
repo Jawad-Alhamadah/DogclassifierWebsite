@@ -3,4 +3,7 @@ node_modules
 CapstoneApp/model_transfer.pt
 CapstoneApp/virt_and_oldmen
 modelContainer/copy.pt
+modelContainer/*.pt
+*.pt
+!CapstoneApp/model_scratch.pt
 
