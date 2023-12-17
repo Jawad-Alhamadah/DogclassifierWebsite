@@ -36,7 +36,7 @@ Navigate to the modelContainer folder and run this command:
 ```
 python combine.py --filename model_transfer.pt --num-files 11 --ext pt --force-delete no
 ```
-![alt text](./capstoneapp/resources/combine.png)
+![alt text](./CapstoneApp/Resources/combine.png)
 
 This will produce a model_transfer.pt file. move it into the "CapstoneApp" folder.
 
@@ -60,7 +60,7 @@ Navigate to the modelContainer folder and run this command:
 python combine.py --filename model_transfer.pt --num-files 11 --ext pt --force-delete no
 ```
 
-![alt text](./capstoneapp/resources/combine.png)
+![alt text](./CapstoneApp/Resources/combine.png)
 
 This will produce a model_transfer.pt file. move it into the "CapstoneApp" folder then run this command:
 
@@ -83,13 +83,13 @@ http://localhost:3005/
 The application is straightforward:
 You have a button that allows you to upload a picture of a dog or a human.
 
-![dog_1](./capstoneapp/resources/dog_1.png)
+![dog_1](./CapstoneApp/Resources/dog_1.png)
 
 You can move the yellow line to zoom in and out for better focus on the dog. The red rectangle is the crop area.
 
 After you are done moving and adjusting the image, click "Check Dog Breed" to predict the dog breed.
 
-![dog_1](./capstoneapp/resources/dog_2.png)
+![dog_2](./CapstoneApp/Resources/dog_2.png)
 
 You will be directed to the next page where you will find out the prediction.
 
@@ -97,7 +97,7 @@ Notice the red button under the prediction text.
 This is a link to the Wikipedia page of the dog breed, scraped using BeautifulSoup.
 
 
-![dog_1](./capstoneapp/resources/Retriver.png)
+![wiki](./CapstoneApp/Resources/Retriver.png)
 
 You can also upload images of humans to predict a human's corresponding dog breed!
 
